@@ -46,11 +46,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python${{ env.PYTHON_VERSION }}-dev \
-            libpython${{ env.PYTHON_VERSION }}-dev \
-            python${{ env.PYTHON_VERSION }}-distutils
           # Set up environment for PyO3
           echo "PYTHONPATH=$(python${{ env.PYTHON_VERSION }} -c 'import sys; print(":".join(sys.path))')" >> $GITHUB_ENV
           echo "PYO3_PYTHON=$(which python${{ env.PYTHON_VERSION }})" >> $GITHUB_ENV
@@ -91,11 +86,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python${{ env.PYTHON_VERSION }}-dev \
-            libpython${{ env.PYTHON_VERSION }}-dev \
-            python${{ env.PYTHON_VERSION }}-distutils
           # Set up environment for PyO3
           echo "PYTHONPATH=$(python${{ env.PYTHON_VERSION }} -c 'import sys; print(":".join(sys.path))')" >> $GITHUB_ENV
           echo "PYO3_PYTHON=$(which python${{ env.PYTHON_VERSION }})" >> $GITHUB_ENV
