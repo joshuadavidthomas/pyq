@@ -45,15 +45,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - run: python -m pip install ziglang
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist --find-interpreter --zig
+          args: --release --out dist -i python${{ env.PYTHON_VERSION }}
           sccache: "true"
           manylinux: auto
-          docker-options: -v /opt/hostedtoolcache/Python/${{ env.PYTHON_VERSION }}/x64/lib:/opt/python/lib
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
