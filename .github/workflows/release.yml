@@ -27,17 +27,17 @@ jobs:
     strategy:
       matrix:
         platform:
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: x86_64
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: x86
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: aarch64
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: armv7
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: s390x
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: ppc64le
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
-          sudo echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
           sudo apt-get update
           sudo apt-get install -y python${{ env.PYTHON_VERSION }}-dev
       - name: Build wheels
@@ -67,13 +66,13 @@ jobs:
     strategy:
       matrix:
         platform:
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: x86_64
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: x86
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: aarch64
-          - runner: ubuntu-22.04
+          - runner: ubuntu-20.04
             target: armv7
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +81,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
-          sudo echo "deb http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
           sudo apt-get update
           sudo apt-get install -y python${{ env.PYTHON_VERSION }}-dev
       - name: Build wheels
