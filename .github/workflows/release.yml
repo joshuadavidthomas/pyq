@@ -50,12 +50,10 @@ jobs:
           sudo apt-get install -y \
             python${{ env.PYTHON_VERSION }}-dev \
             libpython${{ env.PYTHON_VERSION }}-dev \
-            libpython${{ env.PYTHON_VERSION }} \
             python${{ env.PYTHON_VERSION }}-distutils
-          # Print Python library location for debugging
-          python${{ env.PYTHON_VERSION }}-config --ldflags
-          # Ensure LIBRARY_PATH includes Python lib directory
-          echo "LIBRARY_PATH=$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+          # Set up environment for PyO3
+          echo "PYTHONPATH=$(python${{ env.PYTHON_VERSION }} -c 'import sys; print(":".join(sys.path))')" >> $GITHUB_ENV
+          echo "PYO3_PYTHON=$(which python${{ env.PYTHON_VERSION }})" >> $GITHUB_ENV
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -64,7 +62,9 @@ jobs:
           sccache: "true"
           manylinux: auto
         env:
-          PYTHON_CONFIGURE_OPTS: "--enable-shared"
+          RUSTFLAGS: "-C link-arg=-Wl,-rpath,$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib"
+          LD_LIBRARY_PATH: "$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LD_LIBRARY_PATH"
+          LIBRARY_PATH: "$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LIBRARY_PATH"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -95,12 +95,10 @@ jobs:
           sudo apt-get install -y \
             python${{ env.PYTHON_VERSION }}-dev \
             libpython${{ env.PYTHON_VERSION }}-dev \
-            libpython${{ env.PYTHON_VERSION }} \
             python${{ env.PYTHON_VERSION }}-distutils
-          # Print Python library location for debugging
-          python${{ env.PYTHON_VERSION }}-config --ldflags
-          # Ensure LIBRARY_PATH includes Python lib directory
-          echo "LIBRARY_PATH=$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+          # Set up environment for PyO3
+          echo "PYTHONPATH=$(python${{ env.PYTHON_VERSION }} -c 'import sys; print(":".join(sys.path))')" >> $GITHUB_ENV
+          echo "PYO3_PYTHON=$(which python${{ env.PYTHON_VERSION }})" >> $GITHUB_ENV
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -109,7 +107,9 @@ jobs:
           sccache: "true"
           manylinux: musllinux_1_2
         env:
-          PYTHON_CONFIGURE_OPTS: "--enable-shared"
+          RUSTFLAGS: "-C link-arg=-Wl,-rpath,$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib"
+          LD_LIBRARY_PATH: "$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LD_LIBRARY_PATH"
+          LIBRARY_PATH: "$(python${{ env.PYTHON_VERSION }}-config --prefix)/lib:$LIBRARY_PATH"
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
