@@ -53,6 +53,7 @@ jobs:
           args: --release --out dist --find-interpreter --zig
           sccache: "true"
           manylinux: auto
+          docker-options: -v /opt/hostedtoolcache/Python/${{ env.PYTHON_VERSION }}/x64/lib:/opt/python/lib
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
