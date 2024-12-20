@@ -10,7 +10,7 @@ readme = "README.md"
 authors = [
     { name = "Josh", email = "josh@joshthomas.dev" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = []
 
 [tool.maturin]
