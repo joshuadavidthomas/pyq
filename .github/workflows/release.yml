@@ -45,16 +45,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - run: python -m pip install 'maturin[zig]'
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Build wheels
-        uses: PyO3/maturin-action@v1
+      - uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist -i python${{ env.PYTHON_VERSION }} --zig
+          args: --release --out dist -i python${{ env.PYTHON_VERSION }}
           sccache: "true"
           manylinux: auto
+          before-script-linux: |
+            if command -v yum &> /dev/null; then
+              # For manylinux containers (CentOS-based)
+              yum install -y python${{ env.PYTHON_VERSION }}-devel
+              # Create symlinks if needed
+              ln -sf /usr/lib64/libpython${{ env.PYTHON_VERSION }}.so.1.0 /usr/lib64/libpython${{ env.PYTHON_VERSION }}.so
+              # For i686 specifically
+              if [[ "${{ matrix.platform.target }}" == "x86" ]]; then
+                ln -sf /usr/lib/libpython${{ env.PYTHON_VERSION }}.so.1.0 /usr/lib/libpython${{ env.PYTHON_VERSION }}.so
+              fi
+            else
+              # For debian-based containers
+              apt-get update -y
+              apt-get install -y python${{ env.PYTHON_VERSION }}-dev
+            fi
+            # Print Python information for debugging
+            ls -l /usr/lib*/libpython* || true
+            python${{ env.PYTHON_VERSION }}-config --ldflags || true
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
