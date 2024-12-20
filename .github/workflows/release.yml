@@ -41,13 +41,10 @@ jobs:
             target: ppc64le
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python${{ env.PYTHON_VERSION }}-dev
+          sudo apt-get install -y python${{ env.PYTHON_VERSION }} python${{ env.PYTHON_VERSION }}-dev
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -76,13 +73,10 @@ jobs:
             target: armv7
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python${{ env.PYTHON_VERSION }}-dev
+          sudo apt-get install -y python${{ env.PYTHON_VERSION }} python${{ env.PYTHON_VERSION }}-dev
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
