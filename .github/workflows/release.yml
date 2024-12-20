@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 env:
-  PYTHON_VERSION: "3.9"
+  PYTHON_VERSION: "3.13"
 
 jobs:
   linux:
@@ -27,24 +27,23 @@ jobs:
     strategy:
       matrix:
         platform:
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: x86_64
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: x86
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: aarch64
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: armv7
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: s390x
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: ppc64le
     steps:
       - uses: actions/checkout@v4
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python${{ env.PYTHON_VERSION }} python${{ env.PYTHON_VERSION }}-dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -63,20 +62,19 @@ jobs:
     strategy:
       matrix:
         platform:
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: x86_64
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: x86
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: aarch64
-          - runner: ubuntu-20.04
+          - runner: ubuntu-22.04
             target: armv7
     steps:
       - uses: actions/checkout@v4
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python${{ env.PYTHON_VERSION }} python${{ env.PYTHON_VERSION }}-dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
