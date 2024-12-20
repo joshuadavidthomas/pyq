@@ -54,23 +54,17 @@ jobs:
           sccache: "true"
           manylinux: auto
           before-script-linux: |
-            if command -v yum &> /dev/null; then
-              # For manylinux containers (CentOS-based)
-              yum install -y python${{ env.PYTHON_VERSION }}-devel
-              # Create symlinks if needed
-              ln -sf /usr/lib64/libpython${{ env.PYTHON_VERSION }}.so.1.0 /usr/lib64/libpython${{ env.PYTHON_VERSION }}.so
-              # For i686 specifically
-              if [[ "${{ matrix.platform.target }}" == "x86" ]]; then
-                ln -sf /usr/lib/libpython${{ env.PYTHON_VERSION }}.so.1.0 /usr/lib/libpython${{ env.PYTHON_VERSION }}.so
-              fi
-            else
-              # For debian-based containers
-              apt-get update -y
-              apt-get install -y python${{ env.PYTHON_VERSION }}-dev
-            fi
-            # Print Python information for debugging
-            ls -l /usr/lib*/libpython* || true
-            python${{ env.PYTHON_VERSION }}-config --ldflags || true
+            # List available Python versions
+            ls /opt/python/ || true
+            # Find the Python 3.12 directory
+            PYDIR=$(ls /opt/python/ | grep cp312)
+            echo "Found Python dir: ${PYDIR}"
+            # Create symlinks to the Python libraries
+            ln -sf /opt/python/${PYDIR}/lib/libpython3.12.so.1.0 /usr/lib64/libpython3.12.so || true
+            ln -sf /opt/python/${PYDIR}/lib/libpython3.12.so.1.0 /usr/lib/libpython3.12.so || true
+            # Print debug info
+            ls -l /opt/python/${PYDIR}/lib/libpython* || true
+            /opt/python/${PYDIR}/bin/python3-config --ldflags || true
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
