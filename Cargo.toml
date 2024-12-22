@@ -2,16 +2,11 @@
 name = "pyq"
 version = "0.1.0"
 edition = "2021"
-repository = "https://github.com/joshuadavidthomas/pyq"
-description = "A Rust CLI to query information about your Python environment"
-homepage = "https://github.com/joshuadavidthomas/pyq"
-authors = ["Josh Thomas <josh@joshthomas.dev>"]
+
+[lib]
+name = "pyq"
+crate-type = ["cdylib"]
 
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
-pyo3 = { version = "0.23", features = ["abi3-py39", "auto-initialize"] }
-
-# The profile that 'dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "thin"
+pyo3 = { version = "0.23", features = ["extension-module"] }
