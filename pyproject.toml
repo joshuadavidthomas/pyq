@@ -13,6 +13,9 @@ authors = [
 requires-python = ">=3.12"
 dependencies = []
 
+[project.scripts]
+pyq = "pyq:main"
+
 [tool.maturin]
 binding = "pyo3"
 python-source = "python"
