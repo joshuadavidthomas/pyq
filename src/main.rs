@@ -23,10 +23,8 @@ enum Commands {
     },
 }
 
-#[pyfunction]
-fn run_cli(args: Vec<String>) -> PyResult<()> {
-    let cli = Cli::try_parse_from(args)
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+fn main() -> PyResult<()> {
+    let cli = Cli::parse();
 
     Python::with_gil(|py| {
         match cli.command {
@@ -71,11 +69,4 @@ fn run_cli(args: Vec<String>) -> PyResult<()> {
         }
         Ok(())
     })
-}
-
-#[pymodule]
-#[pyo3(name = "_cli")]
-fn pyq(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(run_cli, py)?)?;
-    Ok(())
 }
