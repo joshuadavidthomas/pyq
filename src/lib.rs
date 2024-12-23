@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use pyo3::prelude::*;
 use std::collections::BTreeSet;
+use std::env;
 
 #[derive(Parser)]
 #[command(name = "pyq")]
@@ -24,66 +25,65 @@ enum Commands {
 }
 
 #[pyfunction]
-fn main(py: Python) -> PyResult<()> {
-    // Get command line arguments from sys.argv
-    let args = py
-        .import("sys")?
-        .getattr("argv")?
-        .extract::<Vec<String>>()?;
-
-    // Create new args vector without the script name
-    let filtered_args: Vec<String> = args.into_iter().skip(1).collect();
-
-    // Parse the filtered arguments
-    let cli = Cli::try_parse_from(filtered_args).unwrap_or_else(|e| {
+fn main() -> PyResult<()> {
+    // Use Rust's env::args directly
+    let cli = Cli::try_parse_from(env::args()).unwrap_or_else(|e| {
         e.exit();
     });
 
     match cli.command {
         Commands::Version => {
-            let sys = py.import("sys")?;
-            let version: String = sys.getattr("version")?.extract()?;
-            println!("Python version: {}", version);
+            // We still need Python for this specific operation
+            Python::with_gil(|py| {
+                let sys = py.import("sys")?;
+                let version: String = sys.getattr("version")?.extract()?;
+                println!("Python version: {}", version);
+                Ok::<(), PyErr>(())
+            })?;
         }
         Commands::Package { names } => {
-            let importlib_util = py.import("importlib.util")?;
-            let mut installed = BTreeSet::new();
-            let mut missing = BTreeSet::new();
+            // We still need Python for this specific operation
+            Python::with_gil(|py| {
+                let importlib_util = py.import("importlib.util")?;
+                let mut installed = BTreeSet::new();
+                let mut missing = BTreeSet::new();
 
-            for name in names {
-                let spec = importlib_util
-                    .getattr("find_spec")?
-                    .call1((name.as_str(),))?;
-                if spec.is_none() {
-                    missing.insert(name);
-                } else {
-                    installed.insert(name);
+                for name in names {
+                    let spec = importlib_util
+                        .getattr("find_spec")?
+                        .call1((name.as_str(),))?;
+                    if spec.is_none() {
+                        missing.insert(name);
+                    } else {
+                        installed.insert(name);
+                    }
                 }
-            }
 
-            if !installed.is_empty() {
-                println!("Installed packages:");
-                for name in &installed {
-                    println!("  ✅ {}", name);
-                }
-            }
-
-            if !missing.is_empty() {
                 if !installed.is_empty() {
-                    println!();
+                    println!("Installed packages:");
+                    for name in &installed {
+                        println!("  ✅ {}", name);
+                    }
                 }
-                println!("Missing packages:");
-                for name in missing {
-                    println!("  ❌ {}", name);
+
+                if !missing.is_empty() {
+                    if !installed.is_empty() {
+                        println!();
+                    }
+                    println!("Missing packages:");
+                    for name in missing {
+                        println!("  ❌ {}", name);
+                    }
                 }
-            }
+                Ok::<(), PyErr>(())
+            })?;
         }
     }
     Ok(())
 }
 
 #[pymodule]
-fn pyq(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(main, py)?)?;
+fn pyq(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_wrapped(wrap_pyfunction!(main))?;
     Ok(())
 }
