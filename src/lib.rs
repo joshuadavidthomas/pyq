@@ -27,7 +27,7 @@ enum Commands {
 #[pyfunction]
 fn main() -> PyResult<()> {
     let args: Vec<String> = std::iter::once("pyq".to_string())
-        .chain(env::args().skip(1))
+        .chain(env::args().skip(2))
         .collect();
 
     let cli = Cli::try_parse_from(args).unwrap_or_else(|e| {
