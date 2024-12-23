@@ -13,11 +13,5 @@ authors = [
 requires-python = ">=3.9"
 dependencies = []
 
-[tool.maturin]
-bindings = "pyo3"
-include = [
-    { path = "LICENSE", format = "sdist" },
-    { path = "rust-toolchain.toml", format = ["sdist", "wheel"] },
-]
-module-name = "pyq"
-strip = true
+[project.scripts]
+pyq = "pyq:main"
